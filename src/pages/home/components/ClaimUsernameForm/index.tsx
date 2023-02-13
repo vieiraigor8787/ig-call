@@ -2,6 +2,7 @@ import { Button, TextInput } from "@ignite-ui/react";
 import { ArrowRight } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "./styles";
 
 const claimUsernameFormSchema = z.object({
@@ -11,7 +12,9 @@ const claimUsernameFormSchema = z.object({
 type claimUsernameFormData = z.infer<typeof claimUsernameFormSchema>;
 
 export function ClaimUsernameForm() {
-  const { register, handleSubmit } = useForm<claimUsernameFormData>();
+  const { register, handleSubmit } = useForm<claimUsernameFormData>({
+    resolver: zodResolver(claimUsernameFormSchema),
+  });
 
   async function handleClaimUsername(data: claimUsernameFormData) {}
 
