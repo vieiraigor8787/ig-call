@@ -21,9 +21,6 @@ const registerFormSchema = z.object({
   name: z
     .string()
     .min(3, { message: "Mínimo 3 caracteres" })
-    .regex(/^([a-z\\]+)$/, {
-      message: "Só pode conter letras",
-    })
     .transform((name) => name.toLowerCase()),
 });
 
