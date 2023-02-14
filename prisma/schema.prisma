@@ -42,10 +42,10 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessio_token String   @unique
-  user_id      String
-  expires      DateTime
+  id            String   @id @default(cuid())
+  session_token String   @unique
+  user_id       String
+  expires       DateTime
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
