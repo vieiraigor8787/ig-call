@@ -1,13 +1,44 @@
 import { NextApiResponse, NextApiRequest } from "next";
 import { prisma } from "./../prisma";
 import { Adapter } from "next-auth/adapters";
+import { destroyCookie, parseCookies } from "nookies";
 
 export default function PrismaAdapter(
   req: NextApiRequest,
   res: NextApiResponse
 ): Adapter {
   return {
-    async createUser(user) {},
+    async createUser(user) {
+      const { "@igcall:userId": userIdOnCookies } = parseCookies({ req });
+
+      if (!userIdOnCookies) {
+        throw new Error("User ID not found on cookies");
+      }
+
+      const prismaUser = await prisma.user.update({
+        where: {
+          id: userIdOnCookies,
+        },
+        data: {
+          name: user.name,
+          email: user.email,
+          avatar_url: user.avatar_url,
+        },
+      });
+
+      destroyCookie({ res }, "@igcall:userId", {
+        path: "/",
+      });
+
+      return {
+        id: prismaUser.id,
+        name: prismaUser.name,
+        username: prismaUser.username,
+        email: prismaUser.email!,
+        emailVerified: null,
+        avatar_url: prismaUser.avatar_url!,
+      };
+    },
     async getUser(id) {
       const user = await prisma.user.findUnique({
         where: {
@@ -119,7 +150,7 @@ export default function PrismaAdapter(
         data: {
           user_id: userId,
           expires,
-          sessio_token: sessionToken,
+          session_token: sessionToken,
         },
       });
 
