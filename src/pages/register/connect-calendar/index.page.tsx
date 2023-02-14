@@ -27,7 +27,7 @@ export default function Register() {
           </Button>
         </ConnectItem>
 
-        <Button type="submit" disabled>
+        <Button type="submit">
           Próximo passo
           <ArrowRight />
         </Button>
