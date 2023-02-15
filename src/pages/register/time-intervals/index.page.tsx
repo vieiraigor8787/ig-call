@@ -46,7 +46,20 @@ const timeIntervalsFormSchema = z.object({
           endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
         };
       });
-    }),
+    })
+    .refine(
+      (intervals) => {
+        // diferença de pelo menos 1h entre intervalos
+        return intervals.every(
+          (interval) =>
+            interval.endTimeInMinutes - 60 >= interval.startTimeInMinutes
+        );
+      },
+      {
+        message:
+          "O horário de término deve ser pelo menos 1h a mais do horário inicial",
+      }
+    ),
 });
 
 type TimeIntervalFormData = z.infer<typeof timeIntervalsFormSchema>;
@@ -82,9 +95,7 @@ export default function TimeIntervals() {
 
   const intervals = watch("intervals");
 
-  async function handleSetTimeIntervals(data: TimeIntervalFormData) {
-    console.log(data);
-  }
+  async function handleSetTimeIntervals(data: TimeIntervalFormData) {}
 
   return (
     <Container>
@@ -98,7 +109,7 @@ export default function TimeIntervals() {
         <MultiStep size={4} currentStep={3} />
       </Header>
 
-      <IntervalBox as="form">
+      <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)}>
         <IntervalContainer>
           {fields.map((field, i) => {
             return (
