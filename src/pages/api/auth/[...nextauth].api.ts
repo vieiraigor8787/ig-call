@@ -41,5 +41,5 @@ export function buildNextAuthOptions(
 
 //código extraído da docu NextAuthjs
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
-  return await NextAuth(req, res, buildNextAuthOptions(req, res));
+  return NextAuth(req, res, buildNextAuthOptions(req, res));
 }

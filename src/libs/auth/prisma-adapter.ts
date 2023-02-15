@@ -60,7 +60,7 @@ export default function PrismaAdapter(
       };
     },
     async getUserByAccount({ providerAccountId, provider }) {
-      const account = await prisma.account.findUniqueOrThrow({
+      const account = await prisma.account.findUnique({
         where: {
           provider_provider_account_id: {
             provider,
