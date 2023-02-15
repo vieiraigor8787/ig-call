@@ -10,8 +10,10 @@ import {
 import { ArrowRight } from "phosphor-react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
+import { convertTimeStringToMinutes } from "../../../utils/convert-time-string-to-minutes";
 import { getWeekDays } from "../../../utils/get-week-days";
 import { Container, Header } from "../styles";
+import { FormError } from "./styles";
 import {
   IntervalBox,
   IntervalContainer,
@@ -26,7 +28,7 @@ const timeIntervalsFormSchema = z.object({
       z.object({
         weekDay: z.number().min(0).max(6),
         enabled: z.boolean(),
-        StaticRange: z.string(),
+        startTime: z.string(),
         endTime: z.string(),
       })
     )
@@ -34,15 +36,29 @@ const timeIntervalsFormSchema = z.object({
     .transform((intervals) => intervals.filter((interval) => interval.enabled)) // filtra e envia os intervalos que estão selecionados
     .refine((intervals) => intervals.length > 0, {
       message: "Você precisa selecionar pelo menos um dia da semana.",
+    })
+    //converter horario para minutos
+    .transform((intervals) => {
+      return intervals.map((interval) => {
+        return {
+          weekDay: interval.weekDay,
+          startTimeInMinutes: convertTimeStringToMinutes(interval.startTime),
+          endTimeInMinutes: convertTimeStringToMinutes(interval.endTime),
+        };
+      });
     }),
 });
 
 type TimeIntervalFormData = z.infer<typeof timeIntervalsFormSchema>;
 
-const weekDays = getWeekDays();
-
 export default function TimeIntervals() {
-  const { control, register, watch } = useForm({
+  const {
+    control,
+    register,
+    watch,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm({
     resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
@@ -57,12 +73,18 @@ export default function TimeIntervals() {
     },
   });
 
+  const weekDays = getWeekDays();
+
   const { fields } = useFieldArray({
     name: "intervals",
     control,
   });
 
   const intervals = watch("intervals");
+
+  async function handleSetTimeIntervals(data: TimeIntervalFormData) {
+    console.log(data);
+  }
 
   return (
     <Container>
@@ -119,7 +141,11 @@ export default function TimeIntervals() {
           })}
         </IntervalContainer>
 
-        <Button type="submit">
+        {errors.intervals && (
+          <FormError size="sm">{errors.intervals.message}</FormError>
+        )}
+
+        <Button type="submit" disabled={isSubmitting}>
           Próximo passo <ArrowRight />
         </Button>
       </IntervalBox>
