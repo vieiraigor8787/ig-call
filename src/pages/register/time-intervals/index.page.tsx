@@ -1,3 +1,4 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
   Checkbox,
@@ -19,8 +20,30 @@ import {
   IntervalItem,
 } from "./styles";
 
+const timeIntervalsFormSchema = z.object({
+  intervals: z
+    .array(
+      z.object({
+        weekDay: z.number().min(0).max(6),
+        enabled: z.boolean(),
+        StaticRange: z.string(),
+        endTime: z.string(),
+      })
+    )
+    .length(7)
+    .transform((intervals) => intervals.filter((interval) => interval.enabled)) // filtra e envia os intervalos que estão selecionados
+    .refine((intervals) => intervals.length > 0, {
+      message: "Você precisa selecionar pelo menos um dia da semana.",
+    }),
+});
+
+type TimeIntervalFormData = z.infer<typeof timeIntervalsFormSchema>;
+
+const weekDays = getWeekDays();
+
 export default function TimeIntervals() {
   const { control, register, watch } = useForm({
+    resolver: zodResolver(timeIntervalsFormSchema),
     defaultValues: {
       intervals: [
         { weekDay: 0, enabled: false, startTime: "08:00", endTime: "18:00" },
@@ -33,8 +56,6 @@ export default function TimeIntervals() {
       ],
     },
   });
-
-  const weekDays = getWeekDays();
 
   const { fields } = useFieldArray({
     name: "intervals",
