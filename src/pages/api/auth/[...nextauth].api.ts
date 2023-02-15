@@ -1,4 +1,3 @@
-import { profile } from "console";
 import { NextApiResponse, NextApiRequest } from "next";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
@@ -44,6 +43,13 @@ export function buildNextAuthOptions(
         }
 
         return true;
+      },
+
+      async session({ session, user }) {
+        return {
+          ...session,
+          user,
+        };
       },
     },
   };
