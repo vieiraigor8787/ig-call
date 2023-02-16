@@ -23,6 +23,16 @@ export default function Schedule({ user }: ScheduleProps) {
   );
 }
 
+//Gerar pagina estática no momento da build Next
+export const getStaticPaths: GetStaticPaths = async () => {
+  //somento quando o user acessar essa página
+  return {
+    paths: [],
+    //vai gerar a página estatica, quando os dados estiverem prontos (staticprops)
+    fallback: "blocking",
+  };
+};
+
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const username = String(params?.username);
   const user = await prisma.user.findUnique({
@@ -45,5 +55,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         avatarUrl: user.avatar_url,
       },
     },
+    revalidate: 60 * 60 * 24, // a página irá atualizar 1x por dia
   };
 };
