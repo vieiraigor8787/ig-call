@@ -1,4 +1,4 @@
-import { Button, Text, TextInput } from "@ignite-ui/react";
+import { Button, Text, TextArea, TextInput } from "@ignite-ui/react";
 import { CalendarBlank, Clock } from "phosphor-react";
 import { ConfirmForm, FormActions, FormHeader } from "./styles";
 
@@ -23,6 +23,10 @@ export function ConfirmStep() {
       <label>
         <Text size="sm">E-mail</Text>
         <TextInput type="email" placeholder="jhondoe@example.com" />
+      </label>
+      <label>
+        <Text size="sm">Observações</Text>
+        <TextArea placeholder="Escreva aqui alguma observação" />
       </label>
       <FormActions>
         <Button type="button" variant="tertiary">
