@@ -17,6 +17,18 @@ export function Calendar() {
     return dayjs().set("date", 1);
   });
 
+  function handlePreviousMonth() {
+    const previousMonthDate = currentDate.subtract(1, "month");
+
+    setCurrentDate(previousMonthDate);
+  }
+
+  function handleNextMonth() {
+    const nextMonthDate = currentDate.add(1, "month");
+
+    setCurrentDate(nextMonthDate);
+  }
+
   const shortWeekDays = getWeekDays({ short: true });
 
   const currentMonth = currentDate.format("MMMM");
@@ -29,10 +41,10 @@ export function Calendar() {
           {currentMonth} <span>{currentYear}</span>
         </CalendarTitle>
         <CalendarActions>
-          <button>
+          <button onClick={handlePreviousMonth} title="Mês anterior">
             <CaretLeft />
           </button>
-          <button>
+          <button onClick={handleNextMonth} title="Mês seguinte">
             <CaretRight />
           </button>
         </CalendarActions>

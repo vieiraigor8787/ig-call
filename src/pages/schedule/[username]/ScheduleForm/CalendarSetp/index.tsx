@@ -13,12 +13,10 @@ export function CalendarStep() {
   return (
     <Container isTimePickerOpen={isDateSelected}>
       <Calendar />
-      if (isDateSelected) &&{" "}
-      {
+      {isDateSelected && (
         <TimePicker>
-          <TimePickerHeader>
-            terça=feiera <span>20 de setrembro</span>
-          </TimePickerHeader>
+          <TimePickerHeader></TimePickerHeader>
+
           <TimePickerList>
             <TimePickerItem>08:00</TimePickerItem>
             <TimePickerItem>08:00</TimePickerItem>
@@ -31,7 +29,7 @@ export function CalendarStep() {
             <TimePickerItem>08:00</TimePickerItem>
           </TimePickerList>
         </TimePicker>
-      }
+      )}
     </Container>
   );
 }
