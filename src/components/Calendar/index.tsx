@@ -43,10 +43,19 @@ export function Calendar() {
       return currentDate.set("date", i + 1);
     });
 
-    return daysInMonthArray;
-  }, [currentDate]);
+    const firstWeekDay = currentDate.get("day");
 
-  console.log(calendarWeeks);
+    const previousMonthWeekDays = Array.from({
+      length: firstWeekDay,
+    })
+      .map((_, i) => {
+        return currentDate.subtract(i + 1, "day");
+      })
+      .reverse();
+    console.log(previousMonthWeekDays);
+
+    return firstWeekDay;
+  }, [currentDate]);
 
   return (
     <CalendarContainer>
