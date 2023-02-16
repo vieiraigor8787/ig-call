@@ -52,9 +52,8 @@ export function Calendar() {
         return currentDate.subtract(i + 1, "day");
       })
       .reverse();
-    console.log(previousMonthWeekDays);
 
-    return firstWeekDay;
+    return [...previousMonthWeekDays, ...daysInMonthArray];
   }, [currentDate]);
 
   return (
