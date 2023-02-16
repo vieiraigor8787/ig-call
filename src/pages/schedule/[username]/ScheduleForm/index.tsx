@@ -1,5 +1,5 @@
-import { Calendar } from "../../../../components/Calendar";
+import { CalendarStep } from "./CalendarSetp";
 
 export function ScheduleForm() {
-  return <Calendar />;
+  return <CalendarStep />;
 }
