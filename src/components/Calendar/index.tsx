@@ -9,7 +9,7 @@ import {
 } from "./styles";
 
 import { getWeekDays } from "../../utils/get-week-days";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 
 export function Calendar() {
@@ -33,6 +33,20 @@ export function Calendar() {
 
   const currentMonth = currentDate.format("MMMM");
   const currentYear = currentDate.format("YYYY");
+
+  //[ [ 1,2,3], [4,5,6,7,8,9,10] ]
+  const calendarWeeks = useMemo(() => {
+    //calcular quantos dias existem no mes
+    const daysInMonthArray = Array.from({
+      length: currentDate.daysInMonth(),
+    }).map((_, i) => {
+      return currentDate.set("date", i + 1);
+    });
+
+    return daysInMonthArray;
+  }, [currentDate]);
+
+  console.log(calendarWeeks);
 
   return (
     <CalendarContainer>
