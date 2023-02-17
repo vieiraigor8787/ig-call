@@ -6,11 +6,14 @@ import {
   TimePickerItem,
 } from "./styles";
 import { Calendar } from "../../../../../components/Calendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import { api } from "../../../../../libs/axios";
+import { useRouter } from "next/router";
 
 export function CalendarStep() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [available, setAvailable] = useState(null);
 
   const isDateSelected = !!selectedDate;
 
@@ -18,6 +21,23 @@ export function CalendarStep() {
   const describeDate = selectedDate
     ? dayjs(selectedDate).format("DD[ de ]MMMM")
     : null;
+
+  const router = useRouter();
+  const username = String(router.query.username);
+
+  useEffect(() => {
+    if (!selectedDate) {
+      return;
+    }
+
+    api
+      .get(`/users/${username}/availability`, {
+        params: {
+          date: dayjs(selectedDate).format("YYY-MM-DD"),
+        },
+      })
+      .then((response) => console.log(response.data));
+  }, [selectedDate, username]);
 
   return (
     <Container isTimePickerOpen={isDateSelected}>
