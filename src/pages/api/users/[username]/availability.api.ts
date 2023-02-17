@@ -32,4 +32,28 @@ export default async function handle(
   if (isPastDate) {
     return res.json({ availability: [] });
   }
+
+  const userAvailability = await prisma.userTimeInterval.findFirst({
+    where: {
+      user_id: user.id,
+      week_day: referenceDate.get("day"),
+    },
+  });
+
+  if (!userAvailability) {
+    return res.json({ availability: [] });
+  }
+
+  const { time_end_in_minutes, time_start_in_minutes } = userAvailability;
+
+  const startHour = time_start_in_minutes / 60;
+  const endHour = time_end_in_minutes / 60;
+
+  const possibleHours = Array.from({ length: endHour - startHour }).map(
+    (_, i) => {
+      return startHour + i;
+    }
+  );
+
+  return possibleHours;
 }
