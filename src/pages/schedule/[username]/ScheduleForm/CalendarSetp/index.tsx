@@ -5,11 +5,13 @@ import {
   TimePickerHeader,
   TimePickerItem,
 } from "./styles";
-import { Calendar } from "../../../../../components/Calendar";
 import { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import { api } from "../../../../../libs/axios";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import dayjs from "dayjs";
+
+import { Calendar } from "../../../../../components/Calendar";
+import { api } from "../../../../../libs/axios";
 
 interface Available {
   possibleTimes: number[];
@@ -18,8 +20,6 @@ interface Available {
 
 export function CalendarStep() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [available, setAvailable] = useState<Available | null>(null);
-  console.log(selectedDate);
   const isDateSelected = !!selectedDate;
 
   const weekDay = selectedDate ? dayjs(selectedDate).format("dddd") : null;
@@ -30,21 +30,26 @@ export function CalendarStep() {
   const router = useRouter();
   const username = String(router.query.username);
 
-  useEffect(() => {
-    if (!selectedDate) {
-      return;
-    }
+  const selectedDateWithoutTime = selectedDate
+    ? dayjs(selectedDate).format("YYYY-MM-DD")
+    : null;
 
-    api
-      .get(`/users/${username}/availability`, {
+  const { data: available } = useQuery<Available>(
+    ["availability", selectedDateWithoutTime],
+    async () => {
+      const res = await api.get(`/users/${username}/availability`, {
         params: {
-          date: dayjs(selectedDate).format("YYY-MM-DD"),
+          date: dayjs(selectedDate).format("YYYY-MM-DD"),
         },
-      })
-      .then((response) => {
-        setAvailable(response.data);
       });
-  }, [selectedDate, username]);
+      console.log(available);
+
+      return res.data;
+    },
+    {
+      enabled: !!selectedDate,
+    }
+  );
 
   return (
     <Container isTimePickerOpen={isDateSelected}>
