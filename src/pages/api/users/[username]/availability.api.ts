@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
-import { prisma } from "./../../../../libs/prisma";
 import { NextApiRequest, NextApiResponse } from "next";
-export default async function handle(
+import { prisma } from "../../../../libs/prisma";
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -11,10 +12,9 @@ export default async function handle(
 
   const username = String(req.query.username);
   const { date } = req.query;
-  const referenceDate = dayjs(String(date));
 
   if (!date) {
-    return res.status(400).json({ message: "Data não informada" });
+    return res.status(400).json({ message: "Date no provided." });
   }
 
   const user = await prisma.user.findUnique({
@@ -24,13 +24,14 @@ export default async function handle(
   });
 
   if (!user) {
-    return res.status(404).json({ message: "usuário não existente" });
+    return res.status(400).json({ message: "User does not exist." });
   }
 
+  const referenceDate = dayjs(String(date));
   const isPastDate = referenceDate.endOf("day").isBefore(new Date());
 
   if (isPastDate) {
-    return res.json({ possibleTime: [], availableTimes: [] });
+    return res.json({ possibleTimes: [], availableTimes: [] });
   }
 
   const userAvailability = await prisma.userTimeInterval.findFirst({
@@ -41,15 +42,15 @@ export default async function handle(
   });
 
   if (!userAvailability) {
-    return res.json({ possibleTime: [], availableTimes: [] });
+    return res.json({ possibleTimes: [], availableTimes: [] });
   }
 
-  const { time_end_in_minutes, time_start_in_minutes } = userAvailability;
+  const { time_start_in_minutes, time_end_in_minutes } = userAvailability;
 
   const startHour = time_start_in_minutes / 60;
   const endHour = time_end_in_minutes / 60;
 
-  const possibleTime = Array.from({ length: endHour - startHour }).map(
+  const possibleTimes = Array.from({ length: endHour - startHour }).map(
     (_, i) => {
       return startHour + i;
     }
@@ -63,19 +64,20 @@ export default async function handle(
       user_id: user.id,
       date: {
         gte: referenceDate.set("hour", startHour).toDate(),
-        lte: referenceDate.set("minute", endHour).toDate(),
+        lte: referenceDate.set("hour", endHour).toDate(),
       },
     },
   });
 
-  const availableTimes = possibleTime.filter((time) => {
+  const availableTimes = possibleTimes.filter((time) => {
     const isTimeBlocked = blockedTimes.some(
       (blockedTime) => blockedTime.date.getHours() === time
     );
+
     const isTimeInPast = referenceDate.set("hour", time).isBefore(new Date());
 
     return !isTimeBlocked && !isTimeInPast;
   });
 
-  return res.json({ availableTimes, possibleTime });
+  return res.json({ possibleTimes, availableTimes });
 }

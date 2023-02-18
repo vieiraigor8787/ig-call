@@ -23,7 +23,7 @@ interface CalendarWeek {
 type CalendarWeeks = CalendarWeek[];
 
 interface CalendarProps {
-  selectedDate?: Date;
+  selectedDate: Date | null;
   onDateSelected: (date: Date) => void;
 }
 
