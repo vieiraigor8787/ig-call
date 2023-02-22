@@ -77,6 +77,10 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
   const currentYear = currentDate.format("YYYY");
   //[ [ 1,2,3], [4,5,6,7,8,9,10] ]
   const calendarWeeks = useMemo(() => {
+    if (!blockedDates) {
+      return [];
+    }
+
     //calcular quantos dias existem no mes
     const daysInMonthArray = Array.from({
       length: currentDate.daysInMonth(),
