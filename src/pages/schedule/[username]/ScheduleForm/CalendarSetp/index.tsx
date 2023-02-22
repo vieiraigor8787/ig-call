@@ -5,7 +5,7 @@ import {
   TimePickerHeader,
   TimePickerItem,
 } from "./styles";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
