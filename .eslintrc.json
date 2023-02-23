@@ -1,6 +1,8 @@
 {
-  "extends": ["@rocketseat/eslint-config/react", "next/core-web-vitals"],
-  "rules": {
-    "prettier/prettier": "warn"
-  }
+  "extends": [
+    "@rocketseat/eslint-config/react",
+    "next/core-web-vitals",
+    "next",
+    "prettier"
+  ]
 }

@@ -12,6 +12,10 @@ const nextConfig = {
       "lh3.googleusercontent.com",
     ],
   },
+  extends: [
+    //...
+    'plugin:@next/next/recommended',
+  ],
 }
 
 module.exports = nextConfig
