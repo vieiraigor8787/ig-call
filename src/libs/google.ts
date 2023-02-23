@@ -58,4 +58,5 @@ export async function getGoogleOauthService(userId: string) {
       expiry_date,
     });
   }
+  return auth;
 }
