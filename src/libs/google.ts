@@ -3,7 +3,7 @@ import { google } from "googleapis";
 import { prisma } from "./prisma";
 
 export async function getGoogleOauthService(userId: string) {
-  const account = await prisma.account.findFirst({
+  const account = await prisma.account.findFirstOrThrow({
     where: {
       provider: "google",
       user_id: userId,
@@ -18,10 +18,10 @@ export async function getGoogleOauthService(userId: string) {
   auth.setCredentials({
     access_token: account?.access_token,
     refresh_token: account?.refresh_token,
-    expiry_date: account?.expires_at,
+    expiry_date: account.expires_at ? account.expires_at * 1000 : null,
   });
 
-  if (!account?.expires_at) {
+  if (!account.expires_at) {
     return auth;
   }
 
@@ -50,6 +50,12 @@ export async function getGoogleOauthService(userId: string) {
         token_type,
         scope,
       },
+    });
+
+    auth.setCredentials({
+      access_token,
+      refresh_token,
+      expiry_date,
     });
   }
 }
