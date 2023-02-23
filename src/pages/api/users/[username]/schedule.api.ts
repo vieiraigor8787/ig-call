@@ -26,11 +26,13 @@ export default async function handler(
   const createSchedulingBody = z.object({
     name: z.string(),
     email: z.string().email(),
-    obs: z.string(),
-    date: z.string().dateTime(),
+    observations: z.string(),
+    date: z.string(),
   });
 
-  const { date, name, email, obs } = createSchedulingBody.parse(req.body);
+  const { date, name, email, observations } = createSchedulingBody.parse(
+    req.body
+  );
 
   const schedulingDate = dayjs(date).startOf("hour");
 
@@ -57,7 +59,7 @@ export default async function handler(
     data: {
       name,
       email,
-      observations: obs,
+      observations,
       date: schedulingDate.toDate(),
       user_id: user.id,
     },
