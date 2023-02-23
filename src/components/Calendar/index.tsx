@@ -1,4 +1,4 @@
-import { CaretLeft, CaretRight } from "phosphor-react";
+import { CaretLeft, CaretRight } from 'phosphor-react'
 import {
   CalendarBody,
   CalendarContainer,
@@ -6,145 +6,143 @@ import {
   CalendarHeader,
   CalendarTitle,
   CalendarActions,
-} from "./styles";
+} from './styles'
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/router";
-import dayjs from "dayjs";
-import { getWeekDays } from "../../utils/get-week-days";
-import { api } from "../../libs/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
+import dayjs from 'dayjs'
+import { getWeekDays } from '../../utils/get-week-days'
+import { api } from '../../libs/axios'
+import { useQuery } from '@tanstack/react-query'
 
 interface CalendarWeek {
-  week: number;
+  week: number
   days: Array<{
-    date: dayjs.Dayjs;
-    disabled: boolean;
-  }>;
+    date: dayjs.Dayjs
+    disabled: boolean
+  }>
 }
 
-type CalendarWeeks = CalendarWeek[];
+type CalendarWeeks = CalendarWeek[]
 
 interface CalendarProps {
-  selectedDate: Date | null;
-  onDateSelected: (date: Date) => void;
+  selectedDate: Date | null
+  onDateSelected: (date: Date) => void
 }
 
 interface BlockedDates {
-  blockedWeekDays: number[];
-  blockedDates: number[];
+  blockedWeekDays: number[]
+  blockedDates: number[]
 }
 
 export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(() => {
-    return dayjs().set("date", 1);
-  });
+    return dayjs().set('date', 1)
+  })
 
   function handlePreviousMonth() {
-    const previousMonthDate = currentDate.subtract(1, "month");
+    const previousMonthDate = currentDate.subtract(1, 'month')
 
-    setCurrentDate(previousMonthDate);
+    setCurrentDate(previousMonthDate)
   }
 
   function handleNextMonth() {
-    const nextMonthDate = currentDate.add(1, "month");
+    const nextMonthDate = currentDate.add(1, 'month')
 
-    setCurrentDate(nextMonthDate);
+    setCurrentDate(nextMonthDate)
   }
 
-  const router = useRouter();
+  const router = useRouter()
 
-  const username = String(router.query.username);
+  const username = String(router.query.username)
 
   const { data: blockedDates } = useQuery<BlockedDates>(
-    ["blocked-dates", currentDate.get("year"), currentDate.get("month")],
+    ['blocked-dates', currentDate.get('year'), currentDate.get('month')],
     async () => {
       const response = await api.get(`/users/${username}/blocked-dates`, {
         params: {
-          year: currentDate.get("year"),
-          month: currentDate.get("month") + 1,
+          year: currentDate.get('year'),
+          month: currentDate.get('month') + 1,
         },
-      });
+      })
 
-      return response.data;
+      return response.data
     }
-  );
+  )
 
-  const shortWeekDays = getWeekDays({ short: true });
+  const shortWeekDays = getWeekDays({ short: true })
 
-  const currentMonth = currentDate.format("MMMM");
-  const currentYear = currentDate.format("YYYY");
-  //[ [ 1,2,3], [4,5,6,7,8,9,10] ]
+  const currentMonth = currentDate.format('MMMM')
+  const currentYear = currentDate.format('YYYY')
   const calendarWeeks = useMemo(() => {
     if (!blockedDates) {
-      return [];
+      return []
     }
-    //calcular quantos dias existem no mes
     const daysInMonthArray = Array.from({
       length: currentDate.daysInMonth(),
     }).map((_, i) => {
-      return currentDate.set("date", i + 1);
-    });
+      return currentDate.set('date', i + 1)
+    })
 
-    const firstWeekDay = currentDate.get("day");
+    const firstWeekDay = currentDate.get('day')
 
     const previousMonthFillArray = Array.from({
       length: firstWeekDay,
     })
       .map((_, i) => {
-        return currentDate.subtract(i + 1, "day");
+        return currentDate.subtract(i + 1, 'day')
       })
-      .reverse();
+      .reverse()
 
     const lastDayInCurrentMonth = currentDate.set(
-      "date",
+      'date',
       currentDate.daysInMonth()
-    );
+    )
 
-    const lastWeekDay = lastDayInCurrentMonth.get("day");
+    const lastWeekDay = lastDayInCurrentMonth.get('day')
 
     const nextMonthFillArray = Array.from({
       length: 7 - (lastWeekDay + 1),
     }).map((_, i) => {
-      return lastDayInCurrentMonth.add(i + 1, "day");
-    });
+      return lastDayInCurrentMonth.add(i + 1, 'day')
+    })
 
     const calendarDays = [
       ...previousMonthFillArray.map((date) => {
-        return { date, disabled: true };
+        return { date, disabled: true }
       }),
       ...daysInMonthArray.map((date) => {
         return {
           date,
           disabled:
-            date.endOf("day").isBefore(new Date()) ||
-            blockedDates.blockedWeekDays.includes(date.get("day")) ||
-            blockedDates.blockedDates.includes(date.get("date")),
-        };
+            date.endOf('day').isBefore(new Date()) ||
+            blockedDates.blockedWeekDays.includes(date.get('day')) ||
+            blockedDates.blockedDates.includes(date.get('date')),
+        }
       }),
       ...nextMonthFillArray.map((date) => {
-        return { date, disabled: true };
+        return { date, disabled: true }
       }),
-    ];
+    ]
 
     const calendarWeeks = calendarDays.reduce<CalendarWeeks>(
       (weeks, _, i, original) => {
-        const isNewWeek = i % 7 === 0;
+        const isNewWeek = i % 7 === 0
 
         if (isNewWeek) {
           weeks.push({
             week: i / 7 + 1,
             days: original.slice(i, i + 7),
-          });
+          })
         }
 
-        return weeks;
+        return weeks
       },
       []
-    );
+    )
 
-    return calendarWeeks;
-  }, [currentDate, blockedDates]);
+    return calendarWeeks
+  }, [currentDate, blockedDates])
 
   return (
     <CalendarContainer>
@@ -181,16 +179,16 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
                         onClick={() => onDateSelected(date.toDate())}
                         disabled={disabled}
                       >
-                        {date.get("date")}
+                        {date.get('date')}
                       </CalendarDay>
                     </td>
-                  );
+                  )
                 })}
               </tr>
-            );
+            )
           })}
         </tbody>
       </CalendarBody>
     </CalendarContainer>
-  );
+  )
 }

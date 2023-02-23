@@ -1,8 +1,12 @@
 {
-  "extends": [
-    "@rocketseat/eslint-config/react",
-    "next/core-web-vitals",
-    "next",
-    "prettier"
-  ]
+  "extends": ["@rocketseat/eslint-config/react", "next/core-web-vitals"],
+  "rules": {
+    "prettier/prettier": 0,
+    "camelcase": "off",
+    "no-unused-vars": "off",
+    "spaced-comments": "off",
+    "duplicates": "off",
+    "object-shorthand": "off",
+    "no-useless-return": "off"
+  }
 }

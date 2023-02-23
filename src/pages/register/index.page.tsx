@@ -1,32 +1,32 @@
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/router";
-import { NextSeo } from "next-seo";
-import { AxiosError } from "axios";
-import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
-import { ArrowRight } from "phosphor-react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "../../libs/axios";
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/router'
+import { NextSeo } from 'next-seo'
+import { AxiosError } from 'axios'
+import { Button, Heading, MultiStep, Text, TextInput } from '@ignite-ui/react'
+import { ArrowRight } from 'phosphor-react'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { api } from '../../libs/axios'
 
-import { Container, Form, FormError, Header } from "./styles";
+import { Container, Form, FormError, Header } from './styles'
 
 const registerFormSchema = z.object({
   username: z
     .string()
-    .min(3, { message: "Mínimo 3 caracteres" })
+    .min(3, { message: 'Mínimo 3 caracteres' })
     .regex(/^([a-z\\-]+)$/, {
-      message: "Só pode conter letras e hifen",
+      message: 'Só pode conter letras e hifen',
     })
     .transform((username) => username.toLowerCase()),
 
   name: z
     .string()
-    .min(3, { message: "Mínimo 3 caracteres" })
+    .min(3, { message: 'Mínimo 3 caracteres' })
     .transform((name) => name.toLowerCase()),
-});
+})
 
-type registerFormData = z.infer<typeof registerFormSchema>;
+type registerFormData = z.infer<typeof registerFormSchema>
 
 export default function Register() {
   const {
@@ -36,29 +36,28 @@ export default function Register() {
     formState: { errors, isSubmitting },
   } = useForm<registerFormData>({
     resolver: zodResolver(registerFormSchema),
-  });
+  })
 
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
     if (router.query.username) {
-      setValue("username", String(router.query.username));
+      setValue('username', String(router.query.username))
     }
-  }, [router?.query?.username, setValue]);
+  }, [router?.query?.username, setValue])
 
   async function handleRegister(data: registerFormData) {
     try {
-      await api.post("/users", {
+      await api.post('/users', {
         name: data.name,
         username: data.username,
-      });
+      })
 
-      await router.push("/register/connect-calendar");
+      await router.push('/register/connect-calendar')
     } catch (err) {
       if (err instanceof AxiosError && err.response?.data?.message) {
-        const userExists = err.response.data.message;
-        alert(userExists);
-        return;
+        const userExists = err.response.data.message
+        alert(userExists)
       }
     }
   }
@@ -70,7 +69,7 @@ export default function Register() {
         <Header>
           <Heading as="strong">Bem vindo ao Ig-Call</Heading>
           <Text>
-            {" "}
+            {' '}
             Precisamos de algumas informações para criar seu perfil! Ah, você
             pode editar essas informações depois.
           </Text>
@@ -83,7 +82,7 @@ export default function Register() {
             <TextInput
               prefix="ignite.com/"
               placeholder="seu-usuario"
-              {...register("username")}
+              {...register('username')}
             ></TextInput>
 
             {errors.username && (
@@ -95,7 +94,7 @@ export default function Register() {
 
           <label>
             <Text>Nome completo</Text>
-            <TextInput placeholder="Seu nome" {...register("name")}></TextInput>
+            <TextInput placeholder="Seu nome" {...register('name')}></TextInput>
 
             {errors.name && (
               <FormError color="" size="sm">
@@ -111,5 +110,5 @@ export default function Register() {
         </Form>
       </Container>
     </>
-  );
+  )
 }
