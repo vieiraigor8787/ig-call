@@ -12,7 +12,7 @@ export default async function handler(
 
   const username = String(req.query.username);
   const { year, month } = req.query;
-  console.log(req.query);
+
   const user = await prisma.user.findUnique({
     where: {
       username,

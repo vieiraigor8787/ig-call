@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import { AxiosError } from "axios";
 import { Button, Heading, MultiStep, Text, TextInput } from "@ignite-ui/react";
 import { ArrowRight } from "phosphor-react";
@@ -63,49 +64,52 @@ export default function Register() {
   }
 
   return (
-    <Container>
-      <Header>
-        <Heading as="strong">Bem vindo ao Ig-Call</Heading>
-        <Text>
-          {" "}
-          Precisamos de algumas informações para criar seu perfil! Ah, você pode
-          editar essas informações depois.
-        </Text>
+    <>
+      <NextSeo title="Crie sua conta | Ig Call" />
+      <Container>
+        <Header>
+          <Heading as="strong">Bem vindo ao Ig-Call</Heading>
+          <Text>
+            {" "}
+            Precisamos de algumas informações para criar seu perfil! Ah, você
+            pode editar essas informações depois.
+          </Text>
 
-        <MultiStep size={4} currentStep={1} />
-      </Header>
-      <Form as="form" onSubmit={handleSubmit(handleRegister)}>
-        <label>
-          <Text>Nome do usuário</Text>
-          <TextInput
-            prefix="ignite.com/"
-            placeholder="seu-usuario"
-            {...register("username")}
-          ></TextInput>
+          <MultiStep size={4} currentStep={1} />
+        </Header>
+        <Form as="form" onSubmit={handleSubmit(handleRegister)}>
+          <label>
+            <Text>Nome do usuário</Text>
+            <TextInput
+              prefix="ignite.com/"
+              placeholder="seu-usuario"
+              {...register("username")}
+            ></TextInput>
 
-          {errors.username && (
-            <FormError color="" size="sm">
-              {errors.username.message}
-            </FormError>
-          )}
-        </label>
+            {errors.username && (
+              <FormError color="" size="sm">
+                {errors.username.message}
+              </FormError>
+            )}
+          </label>
 
-        <label>
-          <Text>Nome completo</Text>
-          <TextInput placeholder="Seu nome" {...register("name")}></TextInput>
+          <label>
+            <Text>Nome completo</Text>
+            <TextInput placeholder="Seu nome" {...register("name")}></TextInput>
 
-          {errors.name && (
-            <FormError color="" size="sm">
-              {errors.name.message}
-            </FormError>
-          )}
-        </label>
+            {errors.name && (
+              <FormError color="" size="sm">
+                {errors.name.message}
+              </FormError>
+            )}
+          </label>
 
-        <Button type="submit" disabled={isSubmitting}>
-          Próximo passo
-          <ArrowRight />
-        </Button>
-      </Form>
-    </Container>
+          <Button type="submit" disabled={isSubmitting}>
+            Próximo passo
+            <ArrowRight />
+          </Button>
+        </Form>
+      </Container>
+    </>
   );
 }
