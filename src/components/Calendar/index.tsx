@@ -32,6 +32,7 @@ interface CalendarProps {
 
 interface BlockedDates {
   blockedWeekDays: number[];
+  blockedDates: number[];
 }
 
 export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
@@ -52,6 +53,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
   }
 
   const router = useRouter();
+
   const username = String(router.query.username);
 
   const { data: blockedDates } = useQuery<BlockedDates>(
@@ -60,7 +62,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
       const res = await api.get(`/users/${username}/blocked-dates`, {
         params: {
           year: currentDate.get("year"),
-          month: currentDate.get("month"),
+          month: currentDate.get("month") + 1,
         },
       });
 
@@ -80,7 +82,7 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
     if (!blockedDates) {
       return [];
     }
-
+    console.log("calendarWeeks ~ blockedDates", blockedDates);
     //calcular quantos dias existem no mes
     const daysInMonthArray = Array.from({
       length: currentDate.daysInMonth(),
@@ -120,7 +122,8 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
           date,
           disabled:
             date.endOf("day").isBefore(new Date()) ||
-            blockedDates?.blockedWeekDays.includes(date.get("day")),
+            blockedDates.blockedWeekDays.includes(date.get("day")) ||
+            blockedDates.blockedDates.includes(date.get("date")),
         };
       }),
       ...nextMonthFillArray.map((date) => {

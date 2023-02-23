@@ -12,7 +12,7 @@ export default async function handler(
 
   const username = String(req.query.username);
   const { year, month } = req.query;
-
+  console.log(req.query);
   const user = await prisma.user.findUnique({
     where: {
       username,
@@ -42,5 +42,13 @@ export default async function handler(
     );
   });
 
-  return res.json({ blockedWeekDays });
+  const blockedDatesRaw = await prisma.$queryRaw`
+    SELECT * 
+    FROM schedules S
+
+    WHERE S.user_id = ${user.id}
+      AND DATE_FORMAT(S.date, "%Y-%m") = ${`${year}-${month}`}
+  `;
+
+  return res.json({ blockedWeekDays, blockedDatesRaw });
 }
