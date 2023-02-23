@@ -178,8 +178,8 @@ export function Calendar({ selectedDate, onDateSelected }: CalendarProps) {
                   return (
                     <td key={date.toString()}>
                       <CalendarDay
-                        disabled={disabled}
                         onClick={() => onDateSelected(date.toDate())}
+                        disabled={disabled}
                       >
                         {date.get("date")}
                       </CalendarDay>

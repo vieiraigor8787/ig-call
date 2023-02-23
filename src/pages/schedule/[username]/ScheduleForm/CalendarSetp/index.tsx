@@ -39,10 +39,9 @@ export function CalendarStep() {
     async () => {
       const res = await api.get(`/users/${username}/availability`, {
         params: {
-          date: dayjs(selectedDate).format("YYYY-MM-DD"),
+          date: selectedDateWithoutTime,
         },
       });
-      console.log(available);
 
       return res.data;
     },
