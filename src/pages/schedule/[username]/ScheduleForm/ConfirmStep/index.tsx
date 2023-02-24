@@ -1,24 +1,24 @@
-import { Button, Text, TextArea, TextInput } from "@ignite-ui/react";
-import { CalendarBlank, Clock } from "phosphor-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import dayjs from "dayjs";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ConfirmForm, FormActions, FormError, FormHeader } from "./styles";
-import { api } from "../../../../../libs/axios";
-import { useRouter } from "next/router";
+import { Button, Text, TextArea, TextInput } from '@ignite-ui/react'
+import { CalendarBlank, Clock } from 'phosphor-react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import dayjs from 'dayjs'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ConfirmForm, FormActions, FormError, FormHeader } from './styles'
+import { api } from '../../../../../libs/axios'
+import { useRouter } from 'next/router'
 
 const confirmFormSchema = z.object({
-  name: z.string().min(3, { message: "Mínimo de 3 caracteres" }),
-  email: z.string().email({ message: "Digite um endereço de e-mail válido" }),
+  name: z.string().min(3, { message: 'Mínimo de 3 caracteres' }),
+  email: z.string().email({ message: 'Digite um endereço de e-mail válido' }),
   observations: z.string().nullable(),
-});
+})
 
-type ConfirmFormData = z.infer<typeof confirmFormSchema>;
+type ConfirmFormData = z.infer<typeof confirmFormSchema>
 
 interface ConfirmStepProps {
-  schedulingDate: Date;
-  onCancelConfirmation: () => void;
+  schedulingDate: Date
+  onCancelConfirmation: () => void
 }
 
 export function ConfirmStep({
@@ -29,30 +29,28 @@ export function ConfirmStep({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<ConfirmFormData>({
     resolver: zodResolver(confirmFormSchema),
-  });
+  })
 
-  const router = useRouter();
-  const username = String(router.query.username);
+  const router = useRouter()
+  const username = String(router.query.username)
 
   async function handleConfirmStep(data: ConfirmFormData) {
-    const { name, email, observations } = data;
+    const { name, email, observations } = data
 
     await api.post(`/users/${username}/schedule`, {
       name,
       email,
       observations,
       date: schedulingDate,
-    });
+    })
 
-    await router.push(`/schedule/${username}`);
-
-    onCancelConfirmation();
+    onCancelConfirmation()
   }
 
-  const describedDate = dayjs(schedulingDate).format("DD[ de ]MMMM[ de ]YYYY");
-  const describedTime = dayjs(schedulingDate).format("HH[h]mm");
+  const describedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
+  const describedTime = dayjs(schedulingDate).format('HH[h]mm')
 
   return (
     <ConfirmForm as="form" onSubmit={handleSubmit(handleConfirmStep)}>
@@ -69,7 +67,7 @@ export function ConfirmStep({
 
       <label>
         <Text size="sm">Nome completo</Text>
-        <TextInput placeholder="seu nome" {...register("name")} />
+        <TextInput placeholder="seu nome" {...register('name')} />
         {errors.name && <FormError size="sm">{errors.name.message}</FormError>}
       </label>
       <label>
@@ -77,7 +75,7 @@ export function ConfirmStep({
         <TextInput
           type="email"
           placeholder="jhondoe@example.com"
-          {...register("email")}
+          {...register('email')}
         />
         {errors.email && (
           <FormError size="sm">{errors.email.message}</FormError>
@@ -87,7 +85,7 @@ export function ConfirmStep({
         <Text size="sm">Observações</Text>
         <TextArea
           placeholder="Escreva aqui alguma observação"
-          {...register("observations")}
+          {...register('observations')}
         />
       </label>
       <FormActions>
@@ -99,5 +97,5 @@ export function ConfirmStep({
         </Button>
       </FormActions>
     </ConfirmForm>
-  );
+  )
 }
