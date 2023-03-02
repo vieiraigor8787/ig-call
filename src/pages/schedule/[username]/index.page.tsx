@@ -42,7 +42,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const username = String(params?.username)
   const user = await prisma.user.findUnique({
     where: {
-      username: username,
+      username,
     },
   })
 
